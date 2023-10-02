@@ -3,7 +3,7 @@ const puppeteer = require('puppeteer');
 async function crawlWebsite(username, password) {
     let browser;
     try {
-        browser = await puppeteer.launch({ headless: true });
+        browser = await puppeteer.launch({headless: true});
         const page = await browser.newPage();
 
         // Configure Puppeteer to capture console output from the page
@@ -11,7 +11,9 @@ async function crawlWebsite(username, password) {
             console.log(`From page: ${message.text()}`);
         });
 
-        await page.goto('https://portal.chuka.ac.ke/');
+        //! [TEST DATA username=Eb6/46276/20&password=39093917]
+
+        await page.goto('https://portal.chuka.ac.ke/', {timeout: 80000});
         console.log('Navigated to portal.chuka.ac.ke');
 
         // Login
@@ -21,7 +23,7 @@ async function crawlWebsite(username, password) {
         console.log('Typed in password');
         await page.click('#btnLogin');
         console.log('Clicked login button');
-        await page.waitForNavigation({ waitUntil: 'load' });
+        await page.waitForNavigation({waitUntil: 'load', timeout: 80000});
         console.log('Navigation completed after login');
 
         // Extract desired data
@@ -34,14 +36,24 @@ async function crawlWebsite(username, password) {
                 };
 
                 return {
-                    regNo: extractText('.col-sm-6:nth-child(1) .row:nth-child(1) .badge'),
-                    name: extractText('.col-sm-6:nth-child(1) .row:nth-child(2) .badge'),
-                    idNo: extractText('.col-sm-6:nth-child(1) .row:nth-child(3) .badge'),
-                    gender: extractText('.col-sm-6:nth-child(1) .row:nth-child(4) .badge'),
-                    address: extractText('.col-sm-6:nth-child(2) .row:nth-child(1) .badge'),
-                    email: extractText('.col-sm-6:nth-child(2) .row:nth-child(2) .badge'),
-                    dob: extractText('.col-sm-6:nth-child(2) .row:nth-child(3) .badge'),
-                    campus: extractText('.col-sm-6:nth-child(2) .row:nth-child(4) .badge')
+
+                    regNo: extractText('.modal-dialog-scrollable .col-sm-6:nth-child(1) .row:nth-child(1) .badge'),
+                    name: extractText('.modal-dialog-scrollable .col-sm-6:nth-child(1) .row:nth-child(2) .badge'),
+                    idNo: extractText('.modal-dialog-scrollable .col-sm-6:nth-child(1) .row:nth-child(3) .badge'),
+                    gender: extractText('.modal-dialog-scrollable .col-sm-6:nth-child(1) .row:nth-child(4) .badge'),
+                    address: extractText('.modal-dialog-scrollable .col-sm-6:nth-child(2) .row:nth-child(1) .badge'),
+                    email: extractText('.modal-dialog-scrollable .col-sm-6:nth-child(2) .row:nth-child(2) .badge'),
+                    dob: extractText('.modal-dialog-scrollable .col-sm-6:nth-child(2) .row:nth-child(3) .badge'),
+                    campus: extractText('.modal-dialog-scrollable .col-sm-6:nth-child(2) .row:nth-child(4) .badge'),
+
+                    // Extracting Academic Information and Fees
+                    currentProgramme: extractText('.row > .col-md-3:nth-child(1) .card:nth-child(1) .row:nth-child(1) .badge'),
+                    attemptedUnits: extractText('.row > .col-md-3:nth-child(1) .card:nth-child(1) .row:nth-child(2) .badge'),
+                    registeredUnits: extractText('.row > .col-md-3:nth-child(1) .card:nth-child(1) .row:nth-child(3) .badge'),
+                    totalBilled: extractText('.row > .col-md-3:nth-child(2) .card:nth-child(1) .row:nth-child(1) .badge'),
+                    totalPaid: extractText('.row > .col-md-3:nth-child(2) .card:nth-child(1) .row:nth-child(2) .badge'),
+                    feeBalance: extractText('.row > .col-md-3:nth-child(2) .card:nth-child(1) .row:nth-child(3) .badge'),
+
                 };
             } catch (error) {
                 console.error('Error during data extraction:', error);
